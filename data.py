@@ -17,6 +17,10 @@ def data_extractor(option, retries=5, delay=2):
             request.raise_for_status()
             cookies = dict(request.cookies)
             response = session.get(url, headers=headers, cookies=cookies).json()
+            
+            # Inspect the response before converting to DataFrame
+            print("Response:", response)
+            
             rawdata = pd.DataFrame(response)
             return rawdata
         except requests.RequestException as e:
@@ -24,7 +28,7 @@ def data_extractor(option, retries=5, delay=2):
             if attempt < retries - 1:
                 time.sleep(delay)  # Wait before retrying
             else:
-                raise  # Re-raise the last exception if max retries are reached
+                raise
 
     rawop = pd.DataFrame(rawdata['filtered']['data']).fillna(0)
 
