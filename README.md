@@ -1,4 +1,4 @@
-# NSE Option Chain Fetcher With Gen AI📈
+# NSE Option Chain With Gen AI📈
 
 ![image](https://github.com/user-attachments/assets/9272742d-50b8-4cf7-bc47-70635395bb27)
 
