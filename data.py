@@ -4,19 +4,15 @@ import requests
 def data_extractor(option):
 
     url = f'https://www.nseindia.com/api/option-chain-indices?symbol={option}'
-    headers = {
-        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.53 Safari/537.36 Edg/103.0.1264.37',
-        'accept-encoding': 'gzip, deflate, br',
-        'accept-language': 'en-GB,en;q=0.9,en-US;q=0.8'
-            }
     session = requests.Session()
     session.headers.update({
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.53 Safari/537.36 Edg/103.0.1264.37',
         'accept-encoding': 'gzip, deflate, br',
         'accept-language': 'en-GB,en;q=0.9,en-US;q=0.8'
     })
-    response = session.get(url).json()
-    rawdata = pd.DataFrame(response)
+    response = session.get(url)
+    response.raise_for_status()  # Check for any HTTP errors
+    rawdata = pd.DataFrame(response.json())
     rawop = pd.DataFrame(rawdata['filtered']['data']).fillna(0)
 
 
