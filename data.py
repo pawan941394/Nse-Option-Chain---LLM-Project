@@ -10,7 +10,7 @@ def data_extractor(option):
         'accept-language': 'en-GB,en;q=0.9,en-US;q=0.8'
             }
 
-    response = request.get(url).json()
+    response = requests.get(url).json()
     rawdata = pd.DataFrame(response)
     rawop = pd.DataFrame(rawdata['filtered']['data']).fillna(0)
 
