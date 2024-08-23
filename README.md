@@ -27,11 +27,13 @@
 ## Process
 - **Signup Step**: Signup first with simple username and password.
  ![image](https://github.com/user-attachments/assets/1e53797f-243f-4375-9347-e237e56f2f12)
+
 - **Login Step**: Login with your username and password.
   ![image](https://github.com/user-attachments/assets/b884d17c-020a-414a-8580-d6e4cc865bc5)
+  
 - **Live Dashboard**: Login with your username and password.
-  ![image](https://github.com/user-attachments/assets/b884d17c-020a-414a-8580-d6e4cc865bc5)
 ![image](https://github.com/user-attachments/assets/62e8812d-2763-4590-8181-d624c4590753)
+
 - **Gen AI Chatbot**: Gen AI Chat bot with live market data.
 ![image](https://github.com/user-attachments/assets/352de91f-051b-4f36-9e0a-1ef40eb341f5)
 
