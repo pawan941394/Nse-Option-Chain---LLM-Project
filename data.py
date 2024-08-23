@@ -1,7 +1,7 @@
 import pandas as pd
 import json
 import requests
-def data_extractor(option):
+def data_extractor(option,, retries=5, delay=2):
 
     url = f'https://www.nseindia.com/api/option-chain-indices?symbol={option}'
     headers = {
@@ -10,11 +10,21 @@ def data_extractor(option):
         'accept-language': 'en-GB,en;q=0.9,en-US;q=0.8'
             }
     session = requests.Session()
-    request = session.get(url, headers=headers)
-    request.raise_for_status()
-    cookies = dict(request.cookies)
-    response = session.get(url, headers=headers, cookies=cookies).json()
-    rawdata = pd.DataFrame(response)
+    for attempt in range(retries):
+        try:
+            request = session.get(url, headers=headers)
+            request.raise_for_status()
+            cookies = dict(request.cookies)
+            response = session.get(url, headers=headers, cookies=cookies).json()
+            rawdata = pd.DataFrame(response)
+            return rawdata
+        except requests.RequestException as e:
+            print(f"Attempt {attempt + 1} failed: {e}")
+            if attempt < retries - 1:
+                time.sleep(delay)  # Wait before retrying
+            else:
+                raise  # Re-raise the last exception if max retries are reached
+
     rawop = pd.DataFrame(rawdata['filtered']['data']).fillna(0)
 
 
