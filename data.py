@@ -9,11 +9,8 @@ def data_extractor(option):
         'accept-encoding': 'gzip, deflate, br',
         'accept-language': 'en-GB,en;q=0.9,en-US;q=0.8'
             }
-    session = requests.Session()
-    request = session.get(url, headers=headers)
-    request.raise_for_status()
-    cookies = dict(request.cookies)
-    response = session.get(url).json()
+
+    response = request.get(url).json()
     rawdata = pd.DataFrame(response)
     rawop = pd.DataFrame(rawdata['filtered']['data']).fillna(0)
 
