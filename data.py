@@ -13,7 +13,7 @@ def data_extractor(option):
     request = session.get(url, headers=headers)
     request.raise_for_status()
     cookies = dict(request.cookies)
-    response = session.get(url, headers=headers, cookies=cookies).json()
+    response = session.get(url).json()
     rawdata = pd.DataFrame(response)
     rawop = pd.DataFrame(rawdata['filtered']['data']).fillna(0)
 
