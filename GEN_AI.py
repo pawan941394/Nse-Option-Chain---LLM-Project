@@ -1,4 +1,5 @@
 import google.generativeai as genai
+import streamlit as st
 import os
 genai.configure(api_key=st.secrets('api_key'))
 # Create the model
