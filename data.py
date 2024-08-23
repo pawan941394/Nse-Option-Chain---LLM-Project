@@ -3,15 +3,18 @@ import json
 import requests
 def data_extractor(option):
 
-    url = f'https://195.3.220.223/api/option-chain-indices?symbol=NIFTY&__cpo=aHR0cHM6Ly93d3cubnNlaW5kaWEuY29t'
+    url = f'https://www.nseindia.com/api/option-chain-indices?symbol={option}'
     headers = {
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.53 Safari/537.36 Edg/103.0.1264.37',
         'accept-encoding': 'gzip, deflate, br',
         'accept-language': 'en-GB,en;q=0.9,en-US;q=0.8'
             }
-
-    response = requests.get(url)
-    rawdata = pd.DataFrame(response.json())
+    session = requests.Session()
+    request = session.get(url, headers=headers)
+    request.raise_for_status()
+    cookies = dict(request.cookies)
+    response = session.get(url, headers=headers, cookies=cookies).json()
+    rawdata = pd.DataFrame(response)
     rawop = pd.DataFrame(rawdata['filtered']['data']).fillna(0)
 
 
