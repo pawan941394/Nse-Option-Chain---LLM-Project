@@ -1,4 +1,4 @@
-# NSE Option Chain Fetcher 📈
+# NSE Option Chain Fetcher With Gen AI📈
 
 ![image](https://github.com/user-attachments/assets/your-image.png)
 
@@ -15,13 +15,13 @@
 - [Contributing](#contributing)
 
 ## Overview
-**NSE Option Chain Fetcher** is a tool designed to fetch and analyze option chain data from the NSE (National Stock Exchange) API. This project allows users to access real-time and historical option chain data for various stocks.
+**NSE Option Chain Fetcher** is a tool designed to fetch and analyze option chain data from the NSE (National Stock Exchange) API. This project allows users to access real-time and calculate the parameters on real time and Gen AI which help you to get the insight of the data.
 
 ## Features
 - **Real-time Data Fetching**: Retrieves the latest option chain data for specified stocks from NSE.
-- **Historical Data Analysis**: Accesses historical option chain data for in-depth analysis.
-- **Error Handling**: Includes mechanisms to handle common issues such as HTTP 401 Unauthorized errors.
-- **Data Export**: Saves the fetched data into a CSV file for further analysis or reporting.
+- **Different Parameters Calculating**: Interactive dashboard which will help you to calculate the different parameter's on real time data.
+- **Gen AI**: Gen AI chat bot which is designed to get to know more about market. 
+- **Error Handling**: Includes mechanisms to handle common issues such as HTTP 401 Unauthorized errors
 
 ## Installation
 
