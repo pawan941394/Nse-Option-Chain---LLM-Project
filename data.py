@@ -11,7 +11,7 @@ def data_extractor(option):
             }
 
     response = requests.get(url)
-    rawdata = pd.DataFrame(response.json)
+    rawdata = pd.DataFrame(response.json())
     rawop = pd.DataFrame(rawdata['filtered']['data']).fillna(0)
 
 
