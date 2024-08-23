@@ -1,6 +1,7 @@
 import pandas as pd
 import json
 import requests
+import time
 def data_extractor(option, retries=5, delay=2):
 
     url = f'https://www.nseindia.com/api/option-chain-indices?symbol={option}'
