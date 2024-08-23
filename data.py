@@ -28,6 +28,7 @@ def data_extractor(option, retries=5, delay=2):
             if attempt < retries - 1:
                 time.sleep(delay)  # Wait before retrying
             else:
+                print("trying")
                 raise
 
     rawop = pd.DataFrame(rawdata['filtered']['data']).fillna(0)
