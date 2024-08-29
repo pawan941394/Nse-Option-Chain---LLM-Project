@@ -6,7 +6,35 @@ import code_snippts
 import data
 import GEN_AI
 def main():
+    # import json
+    # import streamlit as st
+    
+    # Path to your JSON file
+    json_file = 'users.json'
+    
+    # Function to load users from the JSON file
+    def load_users():
+        try:
+            with open(json_file, 'r') as f:
+                users = json.load(f)
+            return users
+        except FileNotFoundError:
+            return {}
+    
+    # Display registered users in Streamlit
+    st.title('Registered Users')
+    
+    users = load_users()
+    
+    if users:
+        for user, details in users.items():
+            st.write(f"Username: {user}, Details: {details}")
+    else:
+        st.write("No users registered yet.")
 
+
+
+    
     left_column, space, right_column,social = st.columns([2, 1, 2,3])
 
     # Apply the table CSS
