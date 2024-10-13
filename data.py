@@ -1,116 +1,107 @@
 import pandas as pd
 import json
 import requests
-import time
-
-def data_extractor(symbol):
-    count = 0
-    while True:
+def data_extractor(option):
+    count=0
+    while true:
         try:
-            # nse option chain 
-            url = f'https://www.nseindia.com/api/option-chain-indices?symbol={symbol}'
+            url = f'https://www.nseindia.com/api/option-chain-indices?symbol={option}'
             headers = {
-                    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.53 Safari/537.36 Edg/103.0.1264.37',
-                    'accept-encoding': 'gzip, deflate, br',
-                    'accept-language': 'en-GB,en;q=0.9,en-US;q=0.8'
-                        }
-            session = requests.session()
-            request =  session.get(url , headers= headers)
-            json_con =  request.json()
-            df =  pd.DataFrame(json_con)
-            data =  pd.DataFrame(df['filtered']['data'])
-            
-            pe_data_frame = data['PE']
-            ce_data_frame = data['CE']
+                'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.53 Safari/537.36 Edg/103.0.1264.37',
+                'accept-encoding': 'gzip, deflate, br',
+                'accept-language': 'en-GB,en;q=0.9,en-US;q=0.8'
+                    }
+            session = requests.Session()
+            request = session.get(url, headers=headers)
+            request.raise_for_status()
+            cookies = dict(request.cookies)
+            response = session.get(url, headers=headers, cookies=cookies).json()
+            rawdata = pd.DataFrame(response)
+            rawop = pd.DataFrame(rawdata['filtered']['data']).fillna(0)
+
+
+            # *********************************
+            url_g = f"https://webapi.niftytrader.in/webapi/option/fatch-option-chain?symbol={option}"
+            request = session.get(url_g, headers=headers)
+            request.raise_for_status()
+            response_2 = session.get(url_g, headers=headers).json()
+            rawdata_2 = pd.DataFrame(response_2)
+            rawop_2 = pd.DataFrame(rawdata_2['resultData']['opDatas']).fillna(0)
+            call_delta_list = []
+            call_theta_list = []
+            call_gamma_list = []
+            put_delta_list = []
+            put_theta_list = []
+            put_gamma_list = []
+            for i in range(len(rawop)):
+                call_delta_list.append(rawop_2['call_delta'][i])
+                call_theta_list.append(rawop_2['call_theta'][i])
+                call_gamma_list.append(rawop_2['call_gamma'][i])
+                put_delta_list.append(rawop_2['put_delta'][i])
+                put_theta_list.append(rawop_2['put_theta'][i])
+                put_gamma_list.append(rawop_2['put_gamma'][i])
+            # /***************    Data Gethering *******************/
+            data = []
+            call_oi_list = []
+            call_coi_list = []
+            call_last_price_list = []
+            call_iv_list = []
+            call_volumne_list = []
+
+            put_oi_list = []
+            put_coi_list = []
+            put_last_price_list = []
+            put_iv_list = []
+            put_volumne_list = []
+            strike_price_list =[]
             underlying_price = 0
-            # ce list 
-            ce_iv_list =[]
-            ce_oi_list=[]
-            ce_chg_list=[]
-            ce_ltp_list=[]
-            ce_vol_list=[]
+            for i in range(len(rawop)):
+                calloi = callcoi = cltp = putoi = putcoi = pltp = 0
+                strike_price_list.append(rawop['strikePrice'][i])
+                underlying_price =rawop['PE'][i]['underlyingValue']
+                
+                call_oi_list.append(rawop['CE'][i]['openInterest'])
+                call_coi_list.append(rawop['CE'][i]['changeinOpenInterest'])
+                call_last_price_list.append(rawop['CE'][i]['lastPrice'])
+                call_iv_list.append(rawop['CE'][i]['impliedVolatility'])
+                call_volumne_list.append(rawop['CE'][i]['totalTradedVolume'])
 
-            # pe list 
-            pe_iv_list =[]
-            pe_oi_list=[]
-            pe_chg_list=[]
-            pe_ltp_list=[]
-            pe_vol_list=[]
+                put_oi_list.append(rawop['PE'][i]['openInterest'])
+                put_coi_list.append(rawop['PE'][i]['changeinOpenInterest'])
+                put_last_price_list.append(rawop['PE'][i]['lastPrice'])
+                put_iv_list.append(rawop['PE'][i]['impliedVolatility'])
+                put_volumne_list.append(rawop['PE'][i]['totalTradedVolume'])
 
-
-            strike_price_list = []
-            for i in range(len(pe_data_frame)):
-                underlying_price =  pe_data_frame[i]['underlyingValue']
-                strike_price_list.append(data['strikePrice'][i])
-                # ce_list 
-                ce_iv_list.append(ce_data_frame[i]['impliedVolatility'])
-                ce_oi_list.append(ce_data_frame[i]['openInterest'])
-                ce_chg_list.append(ce_data_frame[i]['changeinOpenInterest'])
-                ce_ltp_list.append(ce_data_frame[i]['lastPrice'])
-                ce_vol_list.append(ce_data_frame[i]['totalTradedVolume'])
-                # pe_list 
-                pe_iv_list.append(pe_data_frame[i]['impliedVolatility'])
-                pe_oi_list.append(pe_data_frame[i]['openInterest'])
-                pe_chg_list.append(pe_data_frame[i]['changeinOpenInterest'])
-                pe_ltp_list.append(pe_data_frame[i]['lastPrice'])
-                pe_vol_list.append(pe_data_frame[i]['totalTradedVolume'])
-
-
-
-            # option geeks 
-            url = f'https://webapi.niftytrader.in/webapi/option/fatch-option-chain?symbol={symbol}'
-            headers = {
-                    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.53 Safari/537.36 Edg/103.0.1264.37',
-                    'accept-encoding': 'gzip, deflate, br',
-                    'accept-language': 'en-GB,en;q=0.9,en-US;q=0.8'
-                        }
-            session = requests.session()
-            request =  session.get(url , headers= headers)
-            json_con =  request.json()
-            df =  pd.DataFrame(json_con['resultData']['opDatas'])
-            ce_delta_list=[]
-            ce_theta_list=[]
-            ce_gamma_list=[]
-            pe_delta_list=[]
-            pe_theta_list=[]
-            pe_gamma_list=[]
-            for i in range(len(df)):
-                ce_delta_list.append(df['call_delta'][i])
-                ce_theta_list.append(df['call_theta'][i])
-                ce_gamma_list.append(df['call_gamma'][i])
-
-                pe_delta_list.append(df['put_delta'][i])
-                pe_theta_list.append(df['put_theta'][i])
-                pe_gamma_list.append(df['put_gamma'][i])
+            # Data for the table
             data = {
-                "Delta (Calls)": ce_delta_list,
-                "Theta (Calls)": ce_theta_list,
-                "Gamma (Calls)": ce_gamma_list,
-                "IV (Calls)":ce_iv_list,
-                "OI (Calls)": ce_oi_list,
-                "Changing OI (Calls)":ce_chg_list,
-                "LTP (Calls)": ce_ltp_list,
-                "Volume (Calls)": ce_vol_list,
+                "Delta (Calls)": call_delta_list,
+                "Theta (Calls)": call_theta_list,
+                "Gamma (Calls)": call_gamma_list,
+                "IV (Calls)":call_iv_list,
+                "OI (Calls)": call_oi_list,
+                "Changing OI (Calls)":call_coi_list,
+                "LTP (Calls)": call_last_price_list,
+                "Volume (Calls)": call_volumne_list,
                 "Strike Price": strike_price_list,
-                "Delta (Puts)": pe_delta_list,
-                "Theta (Puts)":pe_theta_list,
-                "Gamma (Puts)":pe_gamma_list,
-                "IV (Puts)": pe_iv_list,
-                "OI (Puts)": pe_oi_list,
-                "Changing OI (Puts)": pe_chg_list,
-                "LTP (Puts)": pe_ltp_list,
-                "Volume (Puts)": pe_vol_list,
-                }
-            table_data =  pd.DataFrame(data)
-            table_data['Gamma (Calls)'] = table_data['Gamma (Calls)'].apply(lambda x: '{:.5f}'.format(x) if pd.notnull(x) else x)
-            table_data['Gamma (Puts)'] = table_data['Gamma (Puts)'].apply(lambda x: '{:.5f}'.format(x) if pd.notnull(x) else x)
-            return {'table_data':table_data, 'underlying_price':underlying_price}
-        
-        except:
-            print("trying again", count)
-            time.sleep(5)
-            count+=1
+                "Delta (Puts)": put_delta_list,
+                "Theta (Puts)":put_theta_list,
+                "Gamma (Puts)":put_gamma_list,
+                "IV (Puts)": put_iv_list,
+                "OI (Puts)": put_oi_list,
+                "Changing OI (Puts)": put_coi_list,
+                "LTP (Puts)": put_last_price_list,
+                "Volume (Puts)": put_volumne_list,
+            }
 
+            # Convert to DataFrame
+            df = pd.DataFrame(data)
+            df['Gamma (Calls)'] = df['Gamma (Calls)'].apply(lambda x: '{:.5f}'.format(x) if pd.notnull(x) else x)
+            df['Gamma (Puts)'] = df['Gamma (Puts)'].apply(lambda x: '{:.5f}'.format(x) if pd.notnull(x) else x)
+            return {'df':df, 'underlying_price':underlying_price}
+        except:
+            count+=1
+            print("We are trying to get the data please wait. we have tried ",count, "  time")
+            time.sleep(5)
 
 
 def calculate_atm_price(selected_option, underlying_price):
