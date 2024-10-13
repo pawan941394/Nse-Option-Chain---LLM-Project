@@ -3,7 +3,7 @@ import json
 import requests
 def data_extractor(option):
     count=0
-    while true:
+    while True:
         try:
             url = f'https://www.nseindia.com/api/option-chain-indices?symbol={option}'
             headers = {
