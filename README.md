@@ -88,8 +88,5 @@ The key dependencies for this project are:
 
 You can find all the dependencies listed in the `requirements.txt` file.
 
-## Configuration
 
-Make sure to configure your **NSE API key** as an environment variable:
-```
 
